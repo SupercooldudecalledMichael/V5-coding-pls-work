@@ -11,7 +11,8 @@ pros::Motor flywheel_55w(14, pros::v5::MotorGears::green);
 pros::Motor agitator_55w(21, pros::v5::MotorGears::green);
 pros::Motor indexer_55w(20, pros::v5::MotorGears::green);
 pros::Motor pushythingy_55w(16,pros::v5::MotorGears::green);
-pros::adi::DigitalOut piston(6,false);
+pros::adi::DigitalOut bttm_piston(6,false);
+pros::adi::DigitalOut top_piston(7,false);
 // create an imu on port 10
 pros::Imu imu(12);
 // create a v5 rotation sensor on port 1
@@ -43,9 +44,9 @@ lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
                             &imu // inertial sensor
 );
 // lateral PID controller
-lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(14, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              3, // derivative gain (kD)
+                                              10, // derivative gain (kD)
                                               3, // anti windup
                                               1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -55,12 +56,12 @@ lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
 );
 
 // angular PID controller  
-lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(1, // proportional gain (kP)
                                               0, // integral gain (kI)
                                               10, // derivative gain (kD)
                                               0, // anti windup
-                                              0, // small error range, in inches
-                                              0, // small error range timeout, in milliseconds
+                                              15, // small error range, in inches
+                                              1000, // small error range timeout, in milliseconds
                                               0, // large error range, in inches
                                               0, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
@@ -91,8 +92,9 @@ void competition_initialize() {}
 void autonomous() {
  // set position to x:0, y:0, heading:0
     chassis.setPose(0, 0, 0);
+    chassis.turnToHeading(90, 100000);
     // turn to face heading 90 with a very long timeout
-    chassis.turnToHeading(90, 5000);
+
 }
 
 
@@ -102,45 +104,52 @@ void opcontrol() {
     while (true) {
         // --- Intake Controls ---
         if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-            bttm_intake_11w.move(127);
+            bttm_intake_11w.move(100);
             top_intake_11w.move(-127);
             pushythingy_55w.move(-127);
-            flywheel_55w.move(-127);
+            flywheel_55w.move(- 127);
+            top_piston.set_value(false);
         }
         else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-            bttm_intake_11w.move(-127);
-            indexer_55w.move(127);
+            bttm_intake_11w.move(-50);
+            indexer_55w.move(39);
             agitator_55w.move(127);
             pushythingy_55w.move(127);
+            top_piston.set_value(false);
         }
         else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-            bttm_intake_11w.move(127);
+            bttm_intake_11w.move(100);
             top_intake_11w.move(-127);
-            indexer_55w.move(127);
+            indexer_55w.move(74);
             flywheel_55w.move(127);
             agitator_55w.move(127);
             pushythingy_55w.move(127);
+            top_piston.set_value(true);
         }
         else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
             bttm_intake_11w.move(127);
-            indexer_55w.move(127);
-            agitator_55w.move(127);
+            //top_intake_11w.move(-127);
+            indexer_55w.move(74);
+            agitator_55w.move(74);
             pushythingy_55w.move(127);
+            top_piston.set_value(true);
         }
         else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
             bttm_intake_11w.move(-127);
             top_intake_11w.move(127);
             flywheel_55w.move(-127);
             pushythingy_55w.move(127);
-            indexer_55w.move(127);
+            indexer_55w.move(-74);
+            top_piston.set_value(false);
         }
         else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
-            bttm_intake_11w.move(-62);
-            indexer_55w.move(127);
+            bttm_intake_11w.move(62);
+            indexer_55w.move(74);
             agitator_55w.move(127);
             pushythingy_55w.move(127);
-            top_intake_11w.move(62);
+            top_intake_11w.move(-62);
             flywheel_55w.move(-127);
+            top_piston.set_value(true);
         }
         else {
             bttm_intake_11w.move(0);
@@ -153,10 +162,10 @@ void opcontrol() {
 
         // --- Pneumatic Controls ---
         if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-            piston.set_value(true);
+            bttm_piston.set_value(true);
         }
         if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
-            piston.set_value(false);
+            bttm_piston.set_value(false);
         }
 
         // --- Drive Controls ---
