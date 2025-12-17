@@ -1,9 +1,17 @@
 #include "main.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
+#include "lemlib/chassis/chassis.hpp"
 #include "lemlib/pose.hpp"
 #include "pros/abstract_motor.hpp"
 #include "pros/misc.h"
 #include "pros/rtos.hpp"
+
+/*
+git add .
+git commit -m"ooga booga"
+git push origin master
+
+*/
 
 pros::Motor bttm_intake_11w(11, pros::v5::MotorGears::blue);
 pros::Motor top_intake_11w(13, pros::v5::MotorGears::blue);
@@ -14,13 +22,13 @@ pros::Motor pushythingy_55w(16,pros::v5::MotorGears::green);
 pros::adi::DigitalOut bttm_piston(6,false);
 pros::adi::DigitalOut top_piston(7,false);
 // create an imu on port 10
-pros::Imu imu(12);
+pros::Imu imu(-12);
 // create a v5 rotation sensor on port 1
 pros::Rotation rotation_sensor_left(10);
 // create a v5 rotation sensor on port 1
 pros::Rotation rotation_sensor_right(1);
 // create a v5 rotation sensor on port 1
-pros::Rotation rotation_sensor_bottom(-18);
+pros::Rotation rotation_sensor_bottom(6);
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup left_mg({4,5});
 pros::MotorGroup right_mg({-7,-8});
@@ -29,7 +37,7 @@ lemlib::Drivetrain drivetrain(&left_mg, // left motor group
                               &right_mg, // right motor group
                               10, // 10 inch track width
                               lemlib::Omniwheel::NEW_325, // using new 4" omnis
-                              400,// drivetrain rpm is 360
+                              333.333333,// drivetrain rpm is 360
                               2 // horizontal drift is 2 (for now)
 );
 // horizontal tracking wheel
@@ -38,35 +46,39 @@ lemlib::TrackingWheel horizontal_tracking_wheel(&rotation_sensor_bottom, lemlib:
 lemlib::TrackingWheel vertical_tracking_wheel_1(&rotation_sensor_left, lemlib::Omniwheel::NEW_275, -7.5, 0.5);
 lemlib::TrackingWheel vertical_tracking_wheel_2(&rotation_sensor_right, lemlib::Omniwheel::NEW_275, 7.5, 0.5);
 lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
-                               nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
+                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
                             nullptr, // horizontal tracking wheel 1
                             nullptr,//&horizontal_tracking_wheel_2, //set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
 // lateral PID controller
-lemlib::ControllerSettings lateral_controller(14, // proportional gain (kP)
-                                              0, // integral gain (kI)
-                                              10, // derivative gain (kD)
-                                              3, // anti windup
-                                              1, // small error range, in inches
-                                              100, // small error range timeout, in milliseconds
-                                              3, // large error range, in inches
-                                              500, // large error range timeout, in milliseconds
-                                              20 // maximum acceleration (slew)
-);
-
-// angular PID controller  
-lemlib::ControllerSettings angular_controller(1, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(2, // proportional gain (kP)
                                               0, // integral gain (kI)
                                               10, // derivative gain (kD)
                                               0, // anti windup
-                                              15, // small error range, in inches
-                                              1000, // small error range timeout, in milliseconds
+                                              0, // small error range, in inches
+                                              0, // small error range timeout, in milliseconds
                                               0, // large error range, in inches
                                               0, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
-lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller, sensors);
+
+// angular PID controller  
+lemlib::ControllerSettings angular_controller(10, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              9, // derivative gain (kD)
+                                              0, // anti windup
+                                              0, // small error range, in inches
+                                              0, // small error range timeout, in milliseconds
+                                              0, // large error range, in inches
+                                              0, // large error range timeout, in milliseconds
+                                              0 // maximum acceleration (slew)
+);
+lemlib::Chassis chassis(drivetrain, // drivetrain settings
+                        lateral_controller, // lateral PID settings
+                        angular_controller, // angular PID settings
+                        sensors // odometry sensors
+);
 void initialize() {
     pros::lcd::initialize();
     chassis.calibrate();
@@ -91,16 +103,14 @@ void disabled() {}
 void competition_initialize() {}
 void autonomous() {
  // set position to x:0, y:0, heading:0
-    chassis.setPose(0, 0, 0);
-    chassis.turnToHeading(90, 100000);
+    
+    chassis.turnToHeading(90, 10000, {.maxSpeed = 56});
     // turn to face heading 90 with a very long timeout
 
 }
 
 
 void opcontrol() {
-    lemlib::Pose poseA(chassis.getPose().x, chassis.getPose().y, 0);
-    chassis.setPose(poseA);
     while (true) {
         // --- Intake Controls ---
         if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
