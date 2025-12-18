@@ -21,6 +21,7 @@ pros::Motor indexer_55w(20, pros::v5::MotorGears::green);
 pros::Motor pushythingy_55w(16,pros::v5::MotorGears::green);
 pros::adi::DigitalOut bttm_piston(6,false);
 pros::adi::DigitalOut top_piston(7,false);
+pros::adi::DigitalOut descorer_piston(8,true);
 // create an imu on port 10
 pros::Imu imu(-12);
 // create a v5 rotation sensor on port 1
@@ -52,9 +53,9 @@ lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
                             &imu // inertial sensor
 );
 // lateral PID controller
-lemlib::ControllerSettings lateral_controller(2, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              10, // derivative gain (kD)
+                                              3, // derivative gain (kD)
                                               0, // anti windup
                                               0, // small error range, in inches
                                               0, // small error range timeout, in milliseconds
@@ -64,9 +65,9 @@ lemlib::ControllerSettings lateral_controller(2, // proportional gain (kP)
 );
 
 // angular PID controller  
-lemlib::ControllerSettings angular_controller(10, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              9, // derivative gain (kD)
+                                              10, // derivative gain (kD)
                                               0, // anti windup
                                               0, // small error range, in inches
                                               0, // small error range timeout, in milliseconds
@@ -103,8 +104,8 @@ void disabled() {}
 void competition_initialize() {}
 void autonomous() {
  // set position to x:0, y:0, heading:0
-    
-    chassis.turnToHeading(90, 10000, {.maxSpeed = 56});
+    chassis.setPose(0, 0, 0);
+    chassis.turnToHeading(90, 10000);
     // turn to face heading 90 with a very long timeout
 
 }
@@ -113,7 +114,7 @@ void autonomous() {
 void opcontrol() {
     while (true) {
         // --- Intake Controls ---
-        if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+        if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
             bttm_intake_11w.move(100);
             top_intake_11w.move(-127);
             pushythingy_55w.move(-127);
@@ -127,7 +128,7 @@ void opcontrol() {
             pushythingy_55w.move(127);
             top_piston.set_value(false);
         }
-        else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+        else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
             bttm_intake_11w.move(100);
             top_intake_11w.move(-127);
             indexer_55w.move(74);
@@ -136,9 +137,9 @@ void opcontrol() {
             pushythingy_55w.move(127);
             top_piston.set_value(true);
         }
-        else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+        else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
             bttm_intake_11w.move(127);
-            //top_intake_11w.move(-127);
+            top_intake_11w.move(74);
             indexer_55w.move(74);
             agitator_55w.move(74);
             pushythingy_55w.move(127);
@@ -153,13 +154,11 @@ void opcontrol() {
             top_piston.set_value(false);
         }
         else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
-            bttm_intake_11w.move(62);
-            indexer_55w.move(74);
-            agitator_55w.move(127);
+            bttm_intake_11w.move(100);
+            top_intake_11w.move(-127);
             pushythingy_55w.move(127);
-            top_intake_11w.move(-62);
-            flywheel_55w.move(-127);
-            top_piston.set_value(true);
+            flywheel_55w.move(127);
+            top_piston.set_value(false);
         }
         else {
             bttm_intake_11w.move(0);
@@ -177,6 +176,13 @@ void opcontrol() {
         if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
             bttm_piston.set_value(false);
         }
+         if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+            descorer_piston.set_value(false);
+        }
+         if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+            descorer_piston.set_value(true);
+        }
+        
 
         // --- Drive Controls ---
         int dir = master.get_analog(ANALOG_LEFT_Y);
