@@ -1,0 +1,14 @@
+#include "globals.hpp"
+void intake();
+void highScore();
+void midScore();
+void lowScore();
+void reverse();
+void prep();
+void bttmUp();
+void bttmDown();
+void descorerUp();
+void descorerDown();
+void intakeControls();
+void pnuematicControls();
+void driverControls();
