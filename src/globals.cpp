@@ -69,8 +69,16 @@ lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
                                               0, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
+lemlib::ExpoDriveCurve throttleCurve(4, 10, 12);
+lemlib::ExpoDriveCurve turnCurve(5, 12, 15);
+
+
 lemlib::Chassis chassis(drivetrain, // drivetrain settings
                         lateral_controller, // lateral PID settings
                         angular_controller, // angular PID settings
-                        sensors // odometry sensors
+                        sensors, // odometry sensors
+                        &throttleCurve,
+                        &turnCurve
 );
+
+bool unJam = true;

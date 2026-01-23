@@ -2,7 +2,7 @@
 #include "helpers.hpp"
 #include "globals.hpp"
 #include "pros/motors.h"
-
+//This is the skills
 /*
 git add .
 git commit -m"ooga booga"
@@ -34,7 +34,11 @@ void initialize() {
 void disabled() {}
 void competition_initialize() {}
 void autonomous() {
-    chassis.setPose(0, 0, 0);
+    chassis.setPose(0, 0, 0); 
+    bttmUp();
+    intake();
+    chassis.moveToPoint(0, 14, 5000, {.minSpeed=127}, false); 
+    //chassis.moveToPose(0, 2, 0, 14000);
     //auto win point
     //chassis.moveToPose(-2, 13, -47, 3000,{}, false);
     //intake();
@@ -45,18 +49,56 @@ void autonomous() {
     //highScore();
     
     //auto skills
-    chassis.moveToPose(2,32.25,-90,4000);
-    bttmDown();
-    chassis.moveToPose(-15,30,-90,4000, {.minSpeed=50});
-    intake();
-    chassis.moveToPose(-14,30,-90,500, {.minSpeed=50});
-    chassis.moveToPose(-15,30,-90,500, {.minSpeed=50});
-    chassis.moveToPose(-14,30,-90,500, {.minSpeed=50});
-    chassis.moveToPose(-15,30,-90,500, {.minSpeed=50});
-    chassis.moveToPose(13, 30, 240, 4000, {.forwards=false, .minSpeed=40});
-    chassis.moveToPose(-3, -62, 270.5, 4000, {.minSpeed=40});
-    chassis.moveToPose(-14.75, -62, 270.5, 4000, {.minSpeed=40});
-    intake();
+    //chassis.moveToPose(0,10,0,1500);
+    //chassis.moveToPose(2,32.7,-80,3000);
+    //intake();
+    //bttmDown();
+    //chassis.moveToPose(-70,26,-80,1000, {.minSpeed=99});
+    //chassis.moveToPoint(70, 26,200, {.forwards=false, .minSpeed=50});
+    //chassis.moveToPoint(-70,26,1250, {.minSpeed=100});
+    //chassis.moveToPoint(70, 26,200, {.forwards=false, .minSpeed=50});
+    //chassis.moveToPoint(-70,26,1250, {.minSpeed=100});
+    //chassis.moveToPoint(70, 26,200, {.forwards=false, .minSpeed=50});
+    //chassis.moveToPoint(-70,26,1250, {.minSpeed=100});
+    //pros::delay(2000);
+    //chassis.moveToPoint(-4, 30, 1000, {.forwards=false});
+    //chassis.turnToHeading(330, 2000, {}, false);
+    //pros::delay(500);
+    //bttmUp();
+    //alignerUp();
+    //chassis.moveToPoint(6, 34.75, 3000, {}, false);
+    //highScore();
+    //pros::delay(5000);
+    //chassis.moveToPoint(-2, 34, 2000, {.forwards=false}, false);
+    //chassis.turnToHeading(220, 1000);
+    //chassis.moveToPoint(-28, 20, 2500, {}, false);
+    //chassis.turnToHeading(170, 1000, {}, false);
+    //bttmUp();
+    //chassis.moveToPoint(-26, -14, 1600, {.forwards=false, .minSpeed=127});
+    //chassis.moveToPoint(-26, 0, 1600, {.forwards=true, .minSpeed=127});
+    //chassis.moveToPoint(-26, -14, 1600, {.forwards=false, .minSpeed=127});
+    //chassis.moveToPoint(-26, 0, 1600, {.forwards=true, .minSpeed=127});
+    //chassis.moveToPoint(-26, -14, 1600, {.forwards=false, .minSpeed=127});
+    //chassis.moveToPoint(-26, 0, 1600, {.forwards=true, .minSpeed=127});
+    //chassis.moveToPoint(-26, -14, 1600, {.forwards=false, .minSpeed=127});
+    //chassis.moveToPoint(-26, 0, 1600, {.forwards=true, .minSpeed=127});
+    //chassis.moveToPoint(-26, -14, 1600, {.forwards=false, .minSpeed=127});
+    //chassis.moveToPoint(-26, 0, 1600, {.forwards=true, .minSpeed=127});
+    
+//KKK I HATE Niggersssss In my butt nig nig nig nig niggers in my butt nig nig nig nig nig niggers nig nig nig fuck me im a nigger
+    
+    //chassis.moveToPose(12, 29, 240, 4000, {.forwards=false, .minSpeed=40}, false);
+    //unJam = false;
+    //chassis.moveToPose(2, -61, 268.5, 4000, {.minSpeed=40}, false);
+    //chassis.moveToPose(-4.75, -60, 268.5, 4000, {.minSpeed=127}, false);
+    //chassis.moveToPose(-15.75, -60, 268.5, 6000, {.minSpeed=127}, false);
+    //intake();
+    //chassis.moveToPose(-16.75, -60, 268.5, 2000, {.minSpeed=127}, false);
+    //pros::delay(1000);
+    //chassis.moveToPose(8, -59.5, -70, 2000, {.forwards=false, .minSpeed=68}, false);
+    //bttmUp();
+    //chassis.moveToPose(-17, -30, 0, 1500);
+    //chassis.moveToPose(-14, -40.35, -100, 3000, {.minSpeed=68});
     //auoto skills
     //chassis.moveToPoint(0, 40, 9000,  {.forwards = true, .minSpeed = 127});
 }

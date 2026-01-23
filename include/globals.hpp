@@ -40,4 +40,9 @@ extern lemlib::ControllerSettings lateral_controller;
 
 // angular PID controller  
 extern lemlib::ControllerSettings angular_controller;
+extern lemlib::ExpoDriveCurve throttleCurve;
+extern lemlib::ExpoDriveCurve turnCurve;
 extern lemlib::Chassis chassis;
+
+
+extern bool unJam;

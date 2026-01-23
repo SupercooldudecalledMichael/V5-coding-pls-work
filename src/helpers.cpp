@@ -1,4 +1,6 @@
 #include "globals.hpp"
+#include "pros/abstract_motor.hpp"
+#include "pros/rtos.hpp"
 void intake(){
     bttm_intake_11w.move(100);
     top_intake_11w.move(-127);
@@ -25,7 +27,7 @@ void midScore(){
     top_piston.set_value(true);
 }
 void lowScore(){
-    bttm_intake_11w.move(-50);
+    bttm_intake_11w.move(-100);
     indexer_55w.move(39);
     agitator_55w.move(127);
     pushythingy_55w.move(127);
@@ -46,6 +48,16 @@ void prep(){
     flywheel_55w.move(127);
     top_piston.set_value(false);
 }
+void code(){
+    while (unJam) {
+        indexer_55w.move(-74);
+        pros :: delay(1000);
+        indexer_55w.move(0);
+        indexer_55w.set_brake_mode(pros::MotorBrake::hold);
+        unJam= false;
+    }
+}
+
 void bttmUp(){
 bttm_piston.set_value(true);
 }
@@ -57,6 +69,12 @@ descorer_piston.set_value(false);
 }
 void descorerDown(){
 descorer_piston.set_value(true);
+}
+void alignerDown(){
+top_piston.set_value(false);
+}
+void alignerUp(){
+top_piston.set_value(true);
 }
 void intakeControls(){
     // --- Intake Controls ---
